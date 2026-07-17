@@ -16,3 +16,18 @@ venv/
 
 # Logs
 *.log
+
+# Web3 secrets
+*.key
+*.pem
+*.secret
+secrets/
+keys/
+wallets/
+
+# Server
+*.sqlite
+*.db
+
+# Environment backups
+.env.*
