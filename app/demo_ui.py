@@ -14,16 +14,18 @@ def demo_ui_page():
 
 body {
     font-family: Arial, sans-serif;
-    background:#0b1020;
-    color:white;
-    padding:20px;
+    background:#070b14;
+    color:#e5e7eb;
+    padding:30px;
 }
 
 
 h1 {
     text-align:center;
-    margin:5px;
-    font-size:28px;
+    margin:8px;
+    font-size:26px;
+    font-weight:600;
+    letter-spacing:0.3px;
 }
 
 .subtitle {
@@ -35,10 +37,11 @@ h1 {
 
 .section {
 
-    background:#151c35;
-    border-radius:12px;
-    padding:15px;
-    margin:15px auto;
+    background:#0f172a;
+    border:1px solid #1e293b;
+    border-radius:14px;
+    padding:22px;
+    margin:18px auto;
     max-width:1000px;
 
 }
@@ -47,8 +50,9 @@ h1 {
 .pipeline {
 
     text-align:center;
-    font-size:18px;
-    padding:10px;
+    font-size:15px;
+    padding:15px;
+    color:#cbd5e1;
 
 }
 
@@ -86,10 +90,12 @@ h1 {
 
 .card {
 
-    background:#151c35;
-    border-radius:12px;
-    padding:15px;
+    background:#111827;
+    border:1px solid #1e293b;
+    border-radius:14px;
+    padding:20px;
     width:220px;
+    text-align:center;
 
 }
 
@@ -120,6 +126,34 @@ font-weight:bold;
 .power {
 
 text-align:center;
+
+}
+
+
+
+.section h3 {
+
+    color:#cbd5e1;
+    font-size:16px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    margin-bottom:18px;
+
+}
+
+.card h3 {
+
+    font-size:17px;
+    font-weight:600;
+    letter-spacing:0.5px;
+
+}
+
+.message {
+
+    color:#94a3b8;
+    font-size:14px;
+    margin-top:12px;
 
 }
 
@@ -168,7 +202,7 @@ Security Pipeline
 <div class="section">
 
 <h3>
-⭐ Agent Trust Layer
+Agent Trust Layer
 </h3>
 
 
@@ -277,7 +311,7 @@ Threat detected.
 <div class="section power">
 
 <h3>
-🛡 Powered By
+Powered By
 </h3>
 
 🧠 Agent Reputation Engine
