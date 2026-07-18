@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 from app.agent import analyze_wallet
 from app.decision_api import DecisionRequest, evaluate_action
+from app.core.demo_engine import create_simulation
 
 app = FastAPI(
     title="Agentic Wallet Guardian",
@@ -70,3 +71,15 @@ def agent_request(request: WalletRequest):
 def decision(request: DecisionRequest):
 
     return evaluate_action(request)
+
+
+@app.post("/simulate")
+def simulate(request: DecisionRequest):
+
+    result = evaluate_action(request)
+
+    return create_simulation(
+        request.model_dump(),
+        result
+    )
+
