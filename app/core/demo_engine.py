@@ -49,6 +49,14 @@ def create_simulation(
             "complete",
 
 
+        "attack_detected":
+            True,
+
+
+        "threat_type":
+            "AI agent transaction abuse",
+
+
         "agent_request": {
 
             "agent":

@@ -32,3 +32,4 @@ wallets/
 # Environment backups
 .env.*
 backup_v21/
+data/guardian_memory.json

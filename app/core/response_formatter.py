@@ -80,6 +80,11 @@ def format_guardian_response(result):
             ),
 
 
+        "explanation":
+
+            explanation,
+
+
         "agent":
             {
 
