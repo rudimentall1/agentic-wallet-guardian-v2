@@ -2,6 +2,7 @@ from app.analyzer import analyze
 from app.policy_engine import evaluate_policy
 from app.core.risk_fusion import calculate_risk_fusion
 from app.core.explanation_engine import generate_explanation
+from app.core.memory_engine import save_decision
 
 
 def evaluate_action(request):
@@ -98,6 +99,30 @@ def evaluate_action(request):
         []
     )
 
+
+    #
+    # Memory Layer
+    #
+
+    save_decision(
+
+        agent=request.get(
+            "agent"
+        ),
+
+        wallet=request.get(
+            "wallet"
+        ),
+
+        action=request.get(
+            "action"
+        ),
+
+        decision=decision,
+
+        risk_score=risk_score
+
+    )
 
 
     #
