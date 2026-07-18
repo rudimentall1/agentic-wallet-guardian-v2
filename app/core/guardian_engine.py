@@ -1,13 +1,18 @@
 from app.analyzer import analyze
 from app.policy_engine import evaluate_policy
+
 from app.core.risk_fusion import calculate_risk_fusion
 from app.core.explanation_engine import generate_explanation
+
 from app.core.memory_engine import save_decision
 from app.core.reputation_engine import calculate_agent_reputation
 from app.core.reputation_adjustment import apply_reputation_adjustment
+from app.core.final_decision_engine import calculate_final_decision
+
 
 
 def evaluate_action(request):
+
 
     wallet_result = None
 
@@ -86,45 +91,15 @@ def evaluate_action(request):
     )
 
 
-    decision = fusion_result.get(
-        "decision"
-    )
-
-
-    risk_score = fusion_result.get(
-        "risk_score"
+    base_risk_score = fusion_result.get(
+        "risk_score",
+        0
     )
 
 
     reasons = fusion_result.get(
         "reasoning",
         []
-    )
-
-
-
-    #
-    # Memory Layer
-    #
-
-    save_decision(
-
-        agent=request.get(
-            "agent"
-        ),
-
-        wallet=request.get(
-            "wallet"
-        ),
-
-        action=request.get(
-            "action"
-        ),
-
-        decision=decision,
-
-        risk_score=risk_score
-
     )
 
 
@@ -149,14 +124,58 @@ def evaluate_action(request):
 
 
     #
-    # Reputation Risk Adjustment
+    # Reputation Adjustment
     #
 
     adjusted_risk_score = apply_reputation_adjustment(
 
-        risk_score,
+        base_risk_score,
 
         agent_reputation
+
+    )
+
+
+
+    #
+    # Final Guardian Decision
+    #
+
+    final_decision = calculate_final_decision(
+
+        adjusted_risk_score
+
+    )
+
+
+    decision = final_decision.get(
+        "decision"
+    )
+
+
+
+    #
+    # Memory Layer
+    # Save final decision
+    #
+
+    save_decision(
+
+        agent=request.get(
+            "agent"
+        ),
+
+        wallet=request.get(
+            "wallet"
+        ),
+
+        action=request.get(
+            "action"
+        ),
+
+        decision=decision,
+
+        risk_score=adjusted_risk_score
 
     )
 
@@ -209,7 +228,7 @@ def evaluate_action(request):
 
 
         "risk_score":
-            risk_score,
+            base_risk_score,
 
 
         "adjusted_risk_score":
@@ -222,6 +241,10 @@ def evaluate_action(request):
 
         "explanation":
             explanation,
+
+
+        "final_guardian_decision":
+            final_decision,
 
 
         "wallet_analysis":
