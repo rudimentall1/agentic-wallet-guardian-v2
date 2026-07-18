@@ -1,53 +1,110 @@
+"""
+Guardian Policy Engine v2
+
+Transaction-level security rules.
+
+Evaluates:
+- transaction amount
+- contract interaction
+- wallet risk signals
+
+Returns:
+ALLOW / WARN / BLOCK
+"""
+
+
 def evaluate_policy(
     amount=None,
     contract=None,
-    wallet_risk=None
+    wallet_risk=None,
+    action=None
 ):
 
-    risks = []
+    reasons = []
+
     decision = "ALLOW"
 
     risk_score = 10
 
 
-    # Large transaction policy
+    #
+    # High value transaction
+    #
 
-    if amount and amount >= 100:
+    if amount is not None:
 
-        risks.append(
-            "Large transaction requires review"
-        )
+        if amount >= 1000:
 
-        decision = "WARN"
-        risk_score += 30
+            reasons.append(
+                "Critical transaction value detected"
+            )
+
+            decision = "BLOCK"
+
+            risk_score += 70
 
 
-    # Unknown contract policy
+        elif amount >= 100:
+
+            reasons.append(
+                "Large transaction requires review"
+            )
+
+            if decision != "BLOCK":
+                decision = "WARN"
+
+            risk_score += 30
+
+
+    #
+    # Smart contract interaction
+    #
 
     if contract:
 
-        risks.append(
+        reasons.append(
             "Smart contract interaction detected"
         )
 
         if decision == "ALLOW":
+
             decision = "WARN"
 
         risk_score += 20
 
 
-    # Wallet risk policy
 
-    if wallet_risk:
+    #
+    # Wallet risk
+    #
 
-        if wallet_risk >= 80:
+    if wallet_risk is not None:
 
-            risks.append(
-                "High wallet risk detected"
+
+        if wallet_risk < 30:
+
+            reasons.append(
+                "Wallet trust score critically low"
             )
 
             decision = "BLOCK"
-            risk_score = 90
+
+            risk_score += 50
+
+
+
+        elif wallet_risk < 50:
+
+            reasons.append(
+                "Wallet trust score is low"
+            )
+
+            if decision == "ALLOW":
+
+                decision = "WARN"
+
+            risk_score += 25
+
 
 
     return {
@@ -59,6 +116,6 @@ def evaluate_policy(
             100
         ),
 
-        "policy_reasons": risks
+        "policy_reasons": reasons
 
     }

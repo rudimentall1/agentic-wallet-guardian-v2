@@ -4,36 +4,68 @@ from app.policy_engine import evaluate_policy
 
 def evaluate_action(request):
 
-    policy_result = evaluate_policy(
-        request
-    )
+    reasons = []
 
     wallet_result = None
+
+
+    #
+    # Wallet Intelligence
+    #
 
     if request.get("wallet"):
 
         try:
+
             wallet_result = analyze(
                 request["wallet"]
             )
 
         except Exception as e:
+
             wallet_result = {
                 "error": str(e)
             }
 
 
-    risk_score = policy_result.get(
-        "policy_risk_score",
-        0
+
+    #
+    # Extract wallet trust score
+    #
+
+    wallet_score = None
+
+
+    if isinstance(wallet_result, dict):
+
+        wallet_score = wallet_result.get(
+            "trust_score"
+        )
+
+
+
+    #
+    # Policy evaluation
+    #
+
+    policy_result = evaluate_policy(
+
+        amount=request.get(
+            "amount"
+        ),
+
+        contract=request.get(
+            "target_contract"
+        ),
+
+        wallet_risk=wallet_score,
+
+        action=request.get(
+            "action"
+        )
+
     )
 
-    decision = policy_result.get(
-        "policy_decision",
-        "ALLOW"
-    )
-
-    reasons = []
 
     reasons.extend(
         policy_result.get(
@@ -43,39 +75,109 @@ def evaluate_action(request):
     )
 
 
-    if wallet_result:
 
-        if isinstance(wallet_result, dict):
+    #
+    # Final decision fusion
+    #
 
-            analysis = wallet_result.get(
-                "analysis",
-                {}
+    decision = policy_result.get(
+        "policy_decision",
+        "ALLOW"
+    )
+
+
+    risk_score = policy_result.get(
+        "policy_risk_score",
+        0
+    )
+
+
+
+    #
+    # Wallet Risk influence
+    #
+
+    if wallet_score is not None:
+
+
+        if wallet_score < 30:
+
+            decision = "BLOCK"
+
+            risk_score = max(
+                risk_score,
+                90
             )
 
-            wallet_score = analysis.get(
-                "trust_score"
+            reasons.append(
+                "Wallet trust score critically low"
             )
 
-            if wallet_score is not None:
 
-                if wallet_score < 50:
+        elif wallet_score < 50:
 
-                    decision = "WARN"
+            if decision == "ALLOW":
 
-                    risk_score = max(
-                        risk_score,
-                        60
-                    )
+                decision = "WARN"
 
-                    reasons.append(
-                        "Wallet trust score is low"
-                    )
+
+            risk_score = max(
+                risk_score,
+                60
+            )
+
+            reasons.append(
+                "Wallet trust score requires review"
+            )
+
+
+
+    #
+    # Guardian action
+    #
+
+    actions = {
+
+        "ALLOW":
+            "Execution allowed",
+
+        "WARN":
+            "User confirmation required",
+
+        "BLOCK":
+            "Execution blocked"
+
+    }
 
 
     return {
-        "guardian": "Agentic Wallet Guardian",
-        "decision": decision,
-        "risk_score": risk_score,
-        "reasons": reasons,
-        "analysis": wallet_result
+
+        "guardian":
+            "Agentic Wallet Guardian",
+
+
+        "decision":
+            decision,
+
+
+        "risk_score":
+            min(
+                risk_score,
+                100
+            ),
+
+
+        "reasons":
+            reasons,
+
+
+        "wallet_analysis":
+            wallet_result,
+
+
+        "guardian_action":
+            actions.get(
+                decision
+            )
+
     }

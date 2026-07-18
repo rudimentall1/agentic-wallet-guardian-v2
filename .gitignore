@@ -31,3 +31,4 @@ wallets/
 
 # Environment backups
 .env.*
+backup_v21/

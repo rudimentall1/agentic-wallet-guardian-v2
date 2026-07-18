@@ -1,16 +1,20 @@
 from pydantic import BaseModel
 
-from app.policy_engine import evaluate_policy
+from app.core.guardian_engine import evaluate_action as guardian_evaluate
 
 
 class DecisionRequest(BaseModel):
 
     agent: str
+
     action: str
+
     wallet: str
 
     target_contract: str | None = None
+
     token: str | None = None
+
     amount: float | None = None
 
 
@@ -18,58 +22,32 @@ class DecisionRequest(BaseModel):
 def evaluate_action(request: DecisionRequest):
 
 
-    policy = evaluate_policy(
-        amount=request.amount,
-        contract=request.target_contract
+    request_data = {
+
+        "agent": request.agent,
+
+        "action": request.action,
+
+        "wallet": request.wallet,
+
+        "target_contract":
+            request.target_contract,
+
+        "token":
+            request.token,
+
+        "amount":
+            request.amount
+
+    }
+
+
+    result = guardian_evaluate(
+        request_data
     )
 
 
-    return {
-
-        "guardian":
-            "Agentic Wallet Guardian",
+    result["request"] = request_data
 
 
-        "decision":
-            policy["policy_decision"],
-
-
-        "risk_score":
-            policy["policy_risk_score"],
-
-
-        "request": {
-
-            "agent": request.agent,
-            "action": request.action,
-            "wallet": request.wallet,
-            "target_contract": request.target_contract,
-            "token": request.token,
-            "amount": request.amount
-
-        },
-
-
-        "policy": {
-
-            "reasons":
-                policy["policy_reasons"]
-
-        },
-
-
-        "guardian_action":
-
-            {
-                "ALLOW":
-                    "Execution allowed",
-
-                "WARN":
-                    "User confirmation required",
-
-                "BLOCK":
-                    "Execution blocked"
-
-            }[policy["policy_decision"]]
-
-    }
+    return result
