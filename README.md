@@ -198,55 +198,81 @@ Token data incomplete
 
 # ChainHack Demo
 
-Guardian includes an autonomous agent threat simulation.
+Guardian demonstrates how autonomous AI agents use a security intelligence layer before executing blockchain actions.
 
-Endpoint:
+The demo shows a complete agent security workflow:
+
+AI Agent Request
+
+↓
+
+Agentic Wallet Guardian
+
+↓
+
+Risk Analysis + Policy Evaluation + Agent Reputation
+
+↓
+
+Explainable Decision
+
+ALLOW / WARN / BLOCK
+
+
+The demo is available through:
 
 GET /demo
 
-
-The demo shows the complete security decision flow.
 
 ---
 
 ## SAFE AGENT
 
-Trusted trading agent.
+Trusted autonomous trading agent.
 
 Action:
 
 swap
-amount: 5
+
+Amount:
+
+5 ETH
 
 
-Result:
+Guardian evaluation:
 
 Decision:
+
 ALLOW
 
-Risk Score:
-10
+
+Reason:
+
+Trusted agent behavior
+
+Low risk action
 
 
 ---
 
 ## UNKNOWN AGENT
 
-Agent with suspicious history.
+New autonomous agent with limited reputation history.
 
-History:
+
+Agent history:
 
 WARN x3
+
 BLOCK x2
 
 
-Result:
+Guardian evaluation:
 
 Decision:
+
 WARN
 
-Risk Score:
-65
 
 Reason:
 
@@ -257,31 +283,36 @@ Agent reputation risk detected
 
 ## MALICIOUS AGENT
 
-Malicious autonomous agent attempting unsafe transfer.
+Autonomous agent attempting a high-risk blockchain action.
+
 
 Action:
 
 transfer
-amount: 500
+
+Amount:
+
+500 ETH
+
+
+Target:
 
 unknown contract
 
 
-Result:
+Guardian evaluation:
 
 Decision:
-BLOCK
 
-Risk Score:
-100
+BLOCK
 
 
 Reasons:
 
-External contract interaction
-Smart contract interaction detected
-Large transaction requires review
-Agent reputation risk detected
+- External contract interaction
+- Large transaction requires review
+- Agent reputation risk detected
+
 
 ---
 
