@@ -1,53 +1,36 @@
 from pydantic import BaseModel
+from typing import Optional
 
 from app.core.guardian_engine import evaluate_action as guardian_evaluate
+from app.core.response_formatter import format_guardian_response
 
 
 class DecisionRequest(BaseModel):
 
-    agent: str
+    wallet: Optional[str] = None
 
-    action: str
+    agent: Optional[str] = None
 
-    wallet: str
+    action: Optional[str] = None
 
-    target_contract: str | None = None
+    amount: Optional[float] = None
 
-    token: str | None = None
+    target_contract: Optional[str] = None
 
-    amount: float | None = None
+    token: Optional[str] = None
 
 
 
 def evaluate_action(request: DecisionRequest):
 
-
-    request_data = {
-
-        "agent": request.agent,
-
-        "action": request.action,
-
-        "wallet": request.wallet,
-
-        "target_contract":
-            request.target_contract,
-
-        "token":
-            request.token,
-
-        "amount":
-            request.amount
-
-    }
+    request_dict = request.model_dump()
 
 
     result = guardian_evaluate(
-        request_data
+        request_dict
     )
 
 
-    result["request"] = request_data
-
-
-    return result
+    return format_guardian_response(
+        result
+    )
